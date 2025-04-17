@@ -34,7 +34,7 @@ export default function Index() {
 
   // If user has session and completed onboarding, go directly to home
   if (hasSession && hasCompletedOnboarding) {
-    return <Redirect href="/home-page" />;
+    return <Redirect href={"/home-page" as any} />;
   }
 
   return (
@@ -81,7 +81,7 @@ export default function Index() {
           </Text>
 
           <TouchableOpacity 
-            onPress={() => router.push('/on-boarding-page1')} 
+            onPress={() => router.push('/on-boarding-page1' as any)} 
             style={{
               marginTop: height * 0.05,
               paddingVertical: height * 0.02,

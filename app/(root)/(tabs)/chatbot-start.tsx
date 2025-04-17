@@ -3,6 +3,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useWindowDimensions } from "react-native";
 import images from "@/constants/images";
+import ChatbotPageScreen from "./chatbot-page";
 
 const { height } = Dimensions.get("window");
 

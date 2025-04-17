@@ -4,13 +4,13 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect } from "react";
 import HomeScreen from "./home-page";
-import ChatbotStartScreen from "./chatbot-start";
 import ChatbotPageScreen from "./chatbot-page";
 import CalendarScreen from "./calendar-page";
 import StatsScreen from "./stats-page";
 import ChatbotHistoryPage from "./chatbot-history-page";
 import { useTheme } from "@/app/(root)/properties/themecontext"; // Import the theme context
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ChatbotStartScreen from "./chatbot-start";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();

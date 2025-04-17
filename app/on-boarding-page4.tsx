@@ -19,12 +19,12 @@ export default function OnBoarding4() {
         try {
             await markOnboardingComplete(); // Mark onboarding as completed
             setTermsModalVisible(false);
-            router.push('/nickname-page');
+            router.push('/nickname-page' as any);
         } catch (error) {
             console.error('Error marking onboarding as complete:', error);
             // Still proceed to nickname page even if marking completion fails
             setTermsModalVisible(false);
-            router.push('/nickname-page');
+            router.push('/nickname-page' as any);
         }
     };
 

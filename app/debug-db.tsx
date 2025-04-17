@@ -3,10 +3,23 @@ import { View, Text, Button, ScrollView, StyleSheet } from 'react-native';
 import supabase from '../supabaseConfig';
 import { getUserFromLocalStorage } from './services/userService';
 
+interface DebugResult {
+  title: string;
+  data: string;
+  timestamp: string;
+}
+
+interface DebugUser {
+  id: number;
+  nickname: string;
+  xp_progress?: number;
+  [key: string]: any;
+}
+
 export default function DebugDB() {
-  const [user, setUser] = useState(null);
-  const [tables, setTables] = useState([]);
-  const [results, setResults] = useState([]);
+  const [user, setUser] = useState<DebugUser | null>(null);
+  const [tables, setTables] = useState<string[]>([]);
+  const [results, setResults] = useState<DebugResult[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -14,7 +27,7 @@ export default function DebugDB() {
     loadTables();
   }, []);
 
-  const addResult = (title, data) => {
+  const addResult = (title: string, data: any) => {
     setResults(prev => [
       { title, data: JSON.stringify(data, null, 2), timestamp: new Date().toISOString() },
       ...prev
@@ -24,8 +37,18 @@ export default function DebugDB() {
   const loadUserData = async () => {
     try {
       const userData = await getUserFromLocalStorage();
-      setUser(userData);
-      addResult('User Data', userData);
+      if (userData) {
+        // Map userData to DebugUser interface
+        setUser({
+          id: userData.user_id,
+          nickname: userData.nickname || '',
+          ...userData
+        });
+        addResult('User Data', userData);
+      } else {
+        setUser(null);
+        addResult('User Data', null);
+      }
     } catch (error) {
       addResult('Error loading user', error);
     }
@@ -42,13 +65,12 @@ export default function DebugDB() {
 
       if (error) {
         addResult('Error loading tables', error);
-        
         // Fallback - try some known tables
         setTables(['users', 'mood_entries', 'chatbot_sessions', 'chatbot_messages', 'chatbot_ratings']);
       } else {
         addResult('Tables metadata', data);
         if (data && data.length > 0) {
-          const tableNames = data.map(item => item.name || item.table);
+          const tableNames = data.map((item: any) => item.name || item.table);
           setTables(tableNames);
         } else {
           // Fallback - try some known tables
@@ -64,7 +86,7 @@ export default function DebugDB() {
     }
   };
 
-  const checkTable = async (tableName) => {
+  const checkTable = async (tableName: string) => {
     setLoading(true);
     try {
       // Get direct table data
@@ -85,7 +107,7 @@ export default function DebugDB() {
     }
   };
 
-  const checkTableColumns = async (tableName) => {
+  const checkTableColumns = async (tableName: string) => {
     setLoading(true);
     try {
       // Try to query information_schema for column information
@@ -95,14 +117,12 @@ export default function DebugDB() {
 
       if (error || !data) {
         addResult(`Error getting ${tableName} columns`, error || 'No data returned');
-        
         // Fallback - try to infer from a single row
         try {
           const { data: sampleData, error: sampleError } = await supabase
             .from(tableName)
             .select('*')
             .limit(1);
-            
           if (sampleError || !sampleData || sampleData.length === 0) {
             addResult(`Error getting ${tableName} sample`, sampleError || 'No sample data');
           } else {
@@ -131,7 +151,6 @@ export default function DebugDB() {
       addResult('Error', 'No user ID available');
       return;
     }
-    
     setLoading(true);
     try {
       // Create a test mood entry with minimal data
@@ -142,14 +161,11 @@ export default function DebugDB() {
         journal: 'Test entry from debug tool',
         logged_date: new Date().toISOString()
       };
-      
       addResult('Test mood entry data', testEntry);
-      
       const { data, error } = await supabase
         .from('mood_entries')
         .insert([testEntry])
         .select();
-        
       if (error) {
         addResult('Error inserting test mood entry', error);
       } else {
@@ -169,7 +185,6 @@ export default function DebugDB() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Database Debug</Text>
-      
       <View style={styles.userInfo}>
         <Text style={styles.userLabel}>
           User: {user ? `${user.nickname} (${user.id})` : 'Not loaded'}
@@ -179,7 +194,6 @@ export default function DebugDB() {
         </Text>
         <Button title="Reload User" onPress={loadUserData} disabled={loading} />
       </View>
-      
       <ScrollView horizontal showsHorizontalScrollIndicator={true} style={styles.tableList}>
         {tables.map((table, index) => (
           <View key={index} style={styles.tableItem}>
@@ -199,7 +213,6 @@ export default function DebugDB() {
           </View>
         ))}
       </ScrollView>
-      
       <View style={styles.actionButtons}>
         <Button 
           title="Test Mood Insert" 
@@ -212,7 +225,6 @@ export default function DebugDB() {
           disabled={loading} 
         />
       </View>
-      
       <Text style={styles.resultsTitle}>Results:</Text>
       <ScrollView style={styles.results}>
         {results.map((result, index) => (

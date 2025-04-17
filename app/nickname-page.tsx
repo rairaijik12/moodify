@@ -27,7 +27,7 @@ export default function NicknamePage() {
         await saveUserToLocalStorage(existingUser);
         // Navigate to home page
         router.push({
-          pathname: "/(root)/(tabs)/home-page",
+          pathname: "/(root)/(tabs)/home-page" as any,
           params: { nickname: nickname.trim(), showWelcome: "true" },
         });
       } else {
@@ -39,7 +39,7 @@ export default function NicknamePage() {
           await saveUserToLocalStorage(newUser);
           // Navigate to home page
           router.push({
-            pathname: "/(root)/(tabs)/home-page",
+            pathname: "/(root)/(tabs)/home-page" as any,
             params: { nickname: nickname.trim(), showWelcome: "true" },
           });
         } else {

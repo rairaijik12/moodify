@@ -14,11 +14,12 @@ import {
 } from "@/app/services/chatbotService";
 import { getUserFromLocalStorage, updateUserXP, fetchUserXP, awardUserXP, ensureXpRowExists } from "@/app/services/userService";
 import { getLocalChatHistory, saveLocalChatHistory, clearLocalChatHistory } from "@/app/services/localChatbotStorage";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import supabase from '@/supabaseConfig';
 import ConfettiCannon from 'react-native-confetti-cannon';
+import ChatbotStartScreen from "./chatbot-start";
 
 const { height, width} = Dimensions.get("window");
 

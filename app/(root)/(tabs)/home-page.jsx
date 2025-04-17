@@ -12,6 +12,7 @@ import XpStreakPopup from './streak-notif';
 import { useTheme } from "@/app/(root)/properties/themecontext"; // Import the theme context
 import { moodColors } from "@/app/services/type";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ChatbotStartScreen from "./chatbot-start";
 
 // Import local mood storage functions instead of Supabase
 import { 
@@ -59,6 +60,8 @@ function getMoodXpDateKey(user) {
   if (!user || !user.user_id) return null;
   return `lastMoodXpClaimDate_${user.user_id}`;
 }
+
+
 
 export default function HomeScreen() {
   const router = useRouter(); // Add router
@@ -449,9 +452,8 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={{ flex: 1, backgroundColor: theme.background }}>
+
       <StatusBar style="light" hidden={false} translucent backgroundColor="transparent" />
-
-
 
       {/* Background Image */}
       <Image
@@ -868,3 +870,4 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
+// ===== TEMP LOGOUT BUTTON COMPONENT END =====

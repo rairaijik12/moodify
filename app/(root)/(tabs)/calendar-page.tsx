@@ -201,46 +201,43 @@ export default function CalendarScreen() {
     setTodayAffirmation(affirmations[randomIndex]);
   }, []);
 
-  // Load mood entries from API
-  useEffect(() => {
-    const loadEntries = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch entries from API
-        const entries = await getLocalMoodEntries();
-        const normalizedEntries = entries.map((entry: any) => ({
-          ...entry,
-          emotions: Array.isArray(entry.emotions)
-            ? entry.emotions
-            : typeof entry.emotions === "string"
-              ? entry.emotions.split(",").map((e: string) => e.trim()).filter(Boolean)
-              : [],
-        }));
-        
-        // Create a mood map for easy lookup by date
-        const newMoodMap: MoodMap = {};
-        normalizedEntries.forEach((entry: MoodEntry) => {
-          if (entry.logged_date) {
-            // Use the date part only as key (YYYY-MM-DD)
-            const dateKey = new Date(entry.logged_date).toISOString().split('T')[0];
-            newMoodMap[dateKey] = entry;
-          }
-        });
-        
-        setMoodMap(newMoodMap);
-        setCalendarEntries(normalizedEntries);
-        console.log("Loaded entries:", normalizedEntries.length);
-        
-      } catch (error) {
-        console.error("Error loading entries:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    loadEntries();
-  }, []);
+  // Always reload mood entries when the page is focused
+  useFocusEffect(
+    useCallback(() => {
+      const loadEntries = async () => {
+        try {
+          setLoading(true);
+          // Fetch entries from API
+          const entries = await getLocalMoodEntries();
+          const normalizedEntries = entries.map((entry: any) => ({
+            ...entry,
+            emotions: Array.isArray(entry.emotions)
+              ? entry.emotions
+              : typeof entry.emotions === "string"
+                ? entry.emotions.split(",").map((e: string) => e.trim()).filter(Boolean)
+                : [],
+          }));
+          // Create a mood map for easy lookup by date
+          const newMoodMap: MoodMap = {};
+          normalizedEntries.forEach((entry: MoodEntry) => {
+            if (entry.logged_date) {
+              // Use the date part only as key (YYYY-MM-DD)
+              const dateKey = new Date(entry.logged_date).toISOString().split('T')[0];
+              newMoodMap[dateKey] = entry;
+            }
+          });
+          setMoodMap(newMoodMap);
+          setCalendarEntries(normalizedEntries);
+          console.log("Loaded entries:", normalizedEntries.length);
+        } catch (error) {
+          console.error("Error loading entries:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      loadEntries();
+    }, [])
+  );
 
   // Navigation for the month
   const goToPreviousMonth = () => setSelectedMonth(subMonths(selectedMonth, 1));

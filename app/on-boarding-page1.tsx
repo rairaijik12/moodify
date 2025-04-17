@@ -49,7 +49,7 @@ export default function OnBoarding1() {
 
                 
                 <TouchableOpacity 
-                    onPress={() => router.push('/on-boarding-page2')} 
+                    onPress={() => router.push('/on-boarding-page2' as any)} 
                     style={{
                         marginTop: height * -0.13,
                         paddingVertical: height * 0.02,
