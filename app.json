@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "fa91ae67-13a5-4930-b1a9-c6d67b60d7fa"
+      }
+    },
+    "android": {
+      "package": "com.rairaijik.moodifydeploymenttesting"
+    }
+  }
+}
