@@ -1,0 +1,18 @@
+{
+    "development": {
+      "dialect": "sqlite",
+      "storage": "./Moodify.db",
+      "port": 3000
+      
+    },
+    "production": {
+      "dialect": "mysql",
+      "username": "avnadmin",
+      "password": "AVNS_CGE48_NOLlXTssSrSnl",
+      "host": "moodify-moodify.g.aivencloud.com",
+      "database": "defaultdb",
+      "port": 23433
+
+      
+    }
+  }

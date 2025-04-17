@@ -1,0 +1,36 @@
+{
+  "cli": {
+    "version": ">= 16.3.1",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "TS_NODE_COMPILER_OPTIONS": "{\"transpileOnly\":true}"
+      }
+    },
+    "preview2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      },
+      "env": {
+        "TS_NODE_COMPILER_OPTIONS": "{\"transpileOnly\":true}"
+      }
+    },
+    "preview3": {
+      "developmentClient": true,
+      "env": {
+        "TS_NODE_COMPILER_OPTIONS": "{\"transpileOnly\":true}"
+      }
+    },
+    "production": {
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
