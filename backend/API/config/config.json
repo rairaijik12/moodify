@@ -8,7 +8,7 @@
     "production": {
       "dialect": "mysql",
       "username": "avnadmin",
-      "password": "AVNS_CGE48_NOLlXTssSrSnl",
+      "password": "${process.env.DB_PASSWORD}",
       "host": "moodify-moodify.g.aivencloud.com",
       "database": "defaultdb",
       "port": 23433
