@@ -1,17 +1,27 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { format } from 'date-fns';
-import { MoodEntry } from './moodService';
-
-// Re-export the MoodEntry type for use in other files
-export type { MoodEntry };
 
 // Storage key for mood entries
 const MOOD_ENTRIES_KEY = 'mood_entries';
 
 /**
- * Get all mood entries from AsyncStorage
+ * @typedef {Object} MoodEntry
+ * @property {string} id - Unique identifier for the entry
+ * @property {string} user_id - User identifier
+ * @property {string} mood - The mood value (lowercase)
+ * @property {string[]} emotions - Array of emotion strings
+ * @property {string} journal - Journal entry text
+ * @property {string} logged_date - ISO string of when the mood was logged
+ * @property {number} timestamp - Unix timestamp of the entry
+ * @property {string} formattedDate - Date in yyyy-MM-dd format
+ * @property {string} created_at - ISO string of entry creation time
  */
-export const getLocalMoodEntries = async (): Promise<MoodEntry[]> => {
+
+/**
+ * Get all mood entries from AsyncStorage
+ * @returns {Promise<MoodEntry[]>} Array of mood entries
+ */
+export const getLocalMoodEntries = async () => {
   try {
     const entriesJson = await AsyncStorage.getItem(MOOD_ENTRIES_KEY);
     if (!entriesJson) return [];
@@ -25,17 +35,23 @@ export const getLocalMoodEntries = async (): Promise<MoodEntry[]> => {
 
 /**
  * Add a new mood entry to AsyncStorage
+ * @param {string} mood - The mood to record
+ * @param {string[]} emotions - Array of emotions
+ * @param {string} [journal=''] - Optional journal entry
+ * @param {Date} [date=new Date()] - Date of the entry
+ * @param {string} [userId='local_user'] - User identifier
+ * @returns {Promise<MoodEntry|null>} The created entry or null if failed
  */
 export const addLocalMoodEntry = async (
-  mood: string,
-  emotions: string[],
-  journal: string = '',
-  date: Date = new Date(),
-  userId: string = 'local_user'
-): Promise<MoodEntry | null> => {
+  mood,
+  emotions,
+  journal = '',
+  date = new Date(),
+  userId = 'local_user'
+) => {
   try {
     // Create entry object
-    const entry: MoodEntry = {
+    const entry = {
       id: date.getTime().toString(), // Use timestamp as ID
       user_id: userId,
       mood: mood.toLowerCase(),
@@ -81,8 +97,10 @@ export const addLocalMoodEntry = async (
 
 /**
  * Get a mood entry by date
+ * @param {string} dateStr - Date string in yyyy-MM-dd format
+ * @returns {Promise<MoodEntry|null>} The found entry or null if not found
  */
-export const getLocalMoodEntryByDate = async (dateStr: string): Promise<MoodEntry | null> => {
+export const getLocalMoodEntryByDate = async (dateStr) => {
   try {
     const entries = await getLocalMoodEntries();
     const entry = entries.find(e => 
@@ -98,8 +116,10 @@ export const getLocalMoodEntryByDate = async (dateStr: string): Promise<MoodEntr
 
 /**
  * Delete a mood entry
+ * @param {string} entryId - ID of the entry to delete
+ * @returns {Promise<boolean>} True if deleted successfully
  */
-export const deleteLocalMoodEntry = async (entryId: string): Promise<boolean> => {
+export const deleteLocalMoodEntry = async (entryId) => {
   try {
     const entries = await getLocalMoodEntries();
     const filteredEntries = entries.filter(e => e.id !== entryId);
@@ -118,11 +138,11 @@ export const deleteLocalMoodEntry = async (entryId: string): Promise<boolean> =>
 
 /**
  * Update a mood entry
+ * @param {string} entryId - ID of the entry to update
+ * @param {Partial<MoodEntry>} updates - Partial entry with fields to update
+ * @returns {Promise<MoodEntry|null>} Updated entry or null if failed
  */
-export const updateLocalMoodEntry = async (
-  entryId: string,
-  updates: Partial<MoodEntry>
-): Promise<MoodEntry | null> => {
+export const updateLocalMoodEntry = async (entryId, updates) => {
   try {
     const entries = await getLocalMoodEntries();
     const entryIndex = entries.findIndex(e => e.id === entryId);
@@ -149,6 +169,7 @@ export const updateLocalMoodEntry = async (
 
 /**
  * Get mood entries formatted for calendar
+ * @returns {Promise<Array<{mood: string, date: string}>>} Formatted entries for calendar
  */
 export const getLocalMoodEntriesForCalendar = async () => {
   try {
