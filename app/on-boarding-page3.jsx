@@ -4,6 +4,10 @@ import { useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/images";
 
+/**
+ * Third onboarding screen component that introduces journaling functionality
+ * @returns {JSX.Element} The rendered component
+ */
 export default function OnBoarding3() {
     const router = useRouter();
     const { width, height } = useWindowDimensions();

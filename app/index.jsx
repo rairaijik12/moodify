@@ -6,6 +6,10 @@ import { useEffect, useState } from 'react';
 import { checkExistingSession } from './services/userService';
 import { COLORS } from './constants/theme';
 
+/**
+ * Index component - The landing/entry point of the application
+ * @returns {JSX.Element} The rendered component
+ */
 export default function Index() {
   const router = useRouter();
   const { width, height } = useWindowDimensions();
@@ -34,7 +38,7 @@ export default function Index() {
 
   // If user has session and completed onboarding, go directly to home
   if (hasSession && hasCompletedOnboarding) {
-    return <Redirect href={"/home-page" as any} />;
+    return <Redirect href="/home-page" />;
   }
 
   return (
@@ -81,7 +85,7 @@ export default function Index() {
           </Text>
 
           <TouchableOpacity 
-            onPress={() => router.push('/on-boarding-page1' as any)} 
+            onPress={() => router.push('/on-boarding-page1')} 
             style={{
               marginTop: height * 0.05,
               paddingVertical: height * 0.02,

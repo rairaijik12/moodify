@@ -4,6 +4,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import images from "@/constants/images";
 
+/**
+ * First onboarding screen component that introduces mood tracking functionality
+ * @returns {JSX.Element} The rendered component
+ */
 export default function OnBoarding1() {
     const router = useRouter();
     const { width, height } = useWindowDimensions();
@@ -49,7 +53,7 @@ export default function OnBoarding1() {
 
                 
                 <TouchableOpacity 
-                    onPress={() => router.push('/on-boarding-page2' as any)} 
+                    onPress={() => router.push('/on-boarding-page2')} 
                     style={{
                         marginTop: height * -0.13,
                         paddingVertical: height * 0.02,

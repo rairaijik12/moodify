@@ -4,30 +4,31 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // Storage key for theme persistence
 const THEME_STORAGE_KEY = "app_selected_theme";
 
-// Define the theme structure with TypeScript interface
-interface ThemeColors {
-  [key: string]: string; // Allow dynamic string keys
-  background: string;
-  text: string;
-  textDark: string;
-  dimmedText: string;
-  calendarBg: string;
-  buttonBg: string;
-  accent1: string;
-  accent2: string;
-  accent3: string;
-  accent4: string;
-  bgLight: string;
-  name: string;
-}
+/**
+ * @typedef {Object} ThemeColors
+ * @property {string} background - Background color
+ * @property {string} text - Primary text color
+ * @property {string} textDark - Dark text color
+ * @property {string} dimmedText - Dimmed text color
+ * @property {string} calendarBg - Calendar background color
+ * @property {string} buttonBg - Button background color
+ * @property {string} accent1 - First accent color
+ * @property {string} accent2 - Second accent color
+ * @property {string} accent3 - Third accent color
+ * @property {string} accent4 - Fourth accent color
+ * @property {string} bgLight - Light background color
+ * @property {string} name - Theme name
+ */
 
-interface ThemeContextType {
-  theme: ThemeColors;
-  setThemeName: (themeName: string) => void;
-  availableThemes: Record<string, ThemeColors>;
-}
+/**
+ * @typedef {Object} ThemeContextType
+ * @property {ThemeColors} theme - Current theme colors
+ * @property {function(string): void} setThemeName - Function to set theme by name
+ * @property {Object.<string, ThemeColors>} availableThemes - All available themes
+ */
 
-const themes: Record<string, ThemeColors> = {
+/** @type {Object.<string, ThemeColors>} */
+const themes = {
   autumn: {
     background: "#000000",
     text: "#FFFFFF",
@@ -101,14 +102,21 @@ const themes: Record<string, ThemeColors> = {
 };
 
 // Create the context with default values
-const ThemeContext = createContext<ThemeContextType>({
+/** @type {React.Context<ThemeContextType>} */
+const ThemeContext = createContext({
   theme: themes.autumn,
   setThemeName: () => {},
   availableThemes: themes
 });
 
-export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState<ThemeColors>(themes.autumn);
+/**
+ * Theme Provider Component
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components
+ * @returns {JSX.Element} Theme provider component
+ */
+export const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState(themes.autumn);
 
   // Load saved theme on initial mount
   useEffect(() => {
@@ -127,7 +135,11 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     loadSavedTheme();
   }, []);
 
-  const setThemeName = (themeName: string) => {
+  /**
+   * Set theme by name
+   * @param {string} themeName - Name of the theme to set
+   */
+  const setThemeName = (themeName) => {
     const newTheme = themes[themeName.toLowerCase()];
     if (newTheme) {
       setTheme(newTheme);
@@ -148,4 +160,8 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+/**
+ * Custom hook to use theme context
+ * @returns {ThemeContextType} Theme context value
+ */
 export const useTheme = () => useContext(ThemeContext);
