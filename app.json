@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Moodify",
-    "slug": "Moodify",
+    "slug": "moodify",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icondark.png",
@@ -16,7 +16,7 @@
         "foregroundImage": "./assets/images/icondark.png",
         "backgroundColor": "#EEEED0"
       },
-      "package": "com.calaxii.Moodify"
+      "package": "com.moodify.moodfiy"
     },
     "web": {
       "bundler": "metro",
@@ -52,9 +52,11 @@
     "extra": {
       "router": {
         "origin": false
-  
+      },
+      "eas": {
+        "projectId": "ba02da97-7a9e-49df-bc29-cfe1aec817e1"
       }
     },
-    "owner": "rairaijik"
+    "owner": "rairaijik13"
   }
 }
