@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect } from "react";
 import HomeScreen from "./home-page";
-import ChatbotPageScreen from "./Chatbot-Page";
+import ChatbotPageScreen from "./chatbot-page";
 
 import CalendarScreen from "./calendar-page";
 import StatsScreen from "./stats-page";

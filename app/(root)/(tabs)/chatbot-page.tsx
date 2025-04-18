@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, ScrollView, SafeAreaView, Dimensions, Image, Keyboard, KeyboardAvoidingView, Platform, Modal, ActivityIndicator } from "react-native";
 import { StatusBar } from "expo-status-bar";
@@ -68,7 +69,7 @@ function getChatbotXpDateKey(user: { user_id: number; nickname?: string } | null
   return `lastChatbotXpClaimDate_${user.user_id}`;
 }
 
-export default function ChatbotPage() {
+export default function ChatbotPageScreen() {
   const [messages, setMessages] = useState<Message[]>([
     { text: "Hey there! I'm Moodi, your AI friend! Just checking in—how's your day?", sender: "bot", role: "assistant", timestamp: new Date().toISOString() }
   ]);
