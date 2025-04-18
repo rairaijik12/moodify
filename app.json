@@ -52,9 +52,7 @@
     "extra": {
       "router": {
         "origin": false
-      },
-      "eas": {
-        "projectId": "d7e16fb0-d9b5-44dc-ac0e-3b72ed2ab1c1"
+  
       }
     },
     "owner": "rairaijik"

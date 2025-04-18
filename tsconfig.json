@@ -15,6 +15,6 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts"
-, "app/debug-db.tjsx"  ]
+, "app/debug-db.tjsx", "app/services/localMoodStorage.js", "app/on-boarding-page3.jsx", "app/on-boarding-page1.jsx", "app/index.jsx", "app/(root)/properties/themecontext.jsx", "app/(root)/properties/[id].jsx", "app/(root)/(tabs)/chatbot-start.jsx", "app/(root)/(tabs)/welcome-modal.jsx", "app/(root)/(tabs)/summary-modal.jsx", "app/(root)/(tabs)/streak-notif.jsx", "app/(root)/(tabs)/stats-page.jsx", "app/(root)/(tabs)/settings-modal.jsx", "app/(root)/(tabs)/mood-selection-modal.jsx", "app/(root)/(tabs)/emotion-journal-modal.jsx", "app/(root)/(tabs)/chatbot-rating-modal.jsx", "app/(root)/(tabs)/chatbot-history-page.jsx", "app/(root)/(tabs)/calendar-page.jsx", "app/(root)/(tabs)/calendar-mood-modal.jsx", "app/(root)/(tabs)/chatbot-page.jsx"  ]
 }
 
