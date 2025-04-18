@@ -11,21 +11,8 @@ import MoodMeh from "@/assets/icons/MoodMeh.png";
 import MoodBad from "@/assets/icons/MoodBad.png";
 import MoodAwful from "@/assets/icons/MoodAwful.png";
 
-// Define MoodEntry interface to fix 'never' type errors
-interface MoodEntry {
-  id?: string;
-  user_id: string;
-  mood: string;
-  emotions: string[];
-  journal?: string;
-  logged_date: string;
-  created_at?: string;
-  timestamp?: number;
-  formattedDate?: string;
-}
-
 // Map mood types to theme color properties
-const moodToThemeMap: Record<string, string> = {
+const moodToThemeMap = {
   "rad": "buttonBg",
   "good": "accent1",
   "meh": "accent2",
@@ -38,17 +25,7 @@ const moodToThemeMap: Record<string, string> = {
   "Awful": "accent4"
 };
 
-// Define mood icons type
-interface MoodIcons {
-  [key: string]: any;
-}
-
-// Define mood emotions type
-interface MoodEmotions {
-  [key: string]: string[];
-}
-
-const moodIcons: Record<string, any> = {
+const moodIcons = {
   Rad: MoodRad,
   Good: MoodGood,
   Meh: MoodMeh,
@@ -61,7 +38,7 @@ const moodIcons: Record<string, any> = {
   awful: MoodAwful,
 };
 
-const moodEmotions: Record<string, string[]> = {
+const moodEmotions = {
   rad: ["Happy", "Excited", "Energetic", "Peaceful", "Confident", "Grateful", "Proud"],
   good: ["Content", "Calm", "Hopeful", "Relaxed", "Satisfied", "Comfortable", "Optimistic"],
   meh: ["Neutral", "Okay", "Bored", "Indifferent", "Tired", "Uncertain", "Distracted"],
@@ -69,19 +46,17 @@ const moodEmotions: Record<string, string[]> = {
   awful: ["Depressed", "Angry", "Fearful", "Hopeless", "Overwhelmed", "Exhausted", "Hurt"]
 };
 
-// Define props interface
-interface CalendarMoodModalProps {
-  visible: boolean;
-  date: Date;
-  onClose: () => void;
-  onSubmit: (mood: string, emotions: string[], journal: string | undefined) => void;
-  existingEntry: MoodEntry | null;
-}
-
 /**
  * Calendar Mood Modal Component
  * Displays detailed information about a mood entry when a calendar day is clicked
  * Also allows creating new mood entries
+ * 
+ * @param {Object} props
+ * @param {boolean} props.visible - Whether the modal is visible
+ * @param {Date} props.date - The selected date
+ * @param {Function} props.onClose - Function to call when closing the modal
+ * @param {Function} props.onSubmit - Function to call when submitting the form
+ * @param {Object|null} props.existingEntry - Existing mood entry data if editing
  */
 const CalendarMoodModal = ({
   visible,
@@ -89,16 +64,16 @@ const CalendarMoodModal = ({
   onClose,
   onSubmit,
   existingEntry = null
-}: CalendarMoodModalProps) => {
+}) => {
   const { theme } = useTheme();
   const { width, height } = useWindowDimensions();
   const iconSize = width < 350 ? 18 : 24;
   
   // States for form inputs
   const [selectedMood, setSelectedMood] = useState("");
-  const [selectedEmotions, setSelectedEmotions] = useState<string[]>([]);
+  const [selectedEmotions, setSelectedEmotions] = useState([]);
   const [journalEntry, setJournalEntry] = useState("");
-  const [viewMode, setViewMode] = useState<"view" | "edit">("view");
+  const [viewMode, setViewMode] = useState("view");
 
   // Reset form when modal opens
   useEffect(() => {
@@ -120,14 +95,14 @@ const CalendarMoodModal = ({
   if (!visible) return null;
   
   // Get the appropriate color from theme based on mood
-  const getMoodThemeColor = (mood: string): string => {
+  const getMoodThemeColor = (mood) => {
     if (!mood) return theme.buttonBg;
     
     const normalizedMood = mood.toLowerCase();
     const themeProperty = moodToThemeMap[mood] || moodToThemeMap[normalizedMood];
     
-    if (themeProperty && theme[themeProperty as keyof typeof theme]) {
-      return theme[themeProperty as keyof typeof theme];
+    if (themeProperty && theme[themeProperty]) {
+      return theme[themeProperty];
     }
     
     return theme.buttonBg; // Fallback
@@ -136,7 +111,7 @@ const CalendarMoodModal = ({
   const moodColor = getMoodThemeColor(selectedMood || (existingEntry?.mood || ""));
   
   // Toggle an emotion in the selected emotions array
-  const toggleEmotion = (emotion: string) => {
+  const toggleEmotion = (emotion) => {
     if (selectedEmotions.includes(emotion)) {
       setSelectedEmotions(selectedEmotions.filter(e => e !== emotion));
     } else {
@@ -521,7 +496,7 @@ const CalendarMoodModal = ({
                 </Text>
                 
                 <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-                  {moodEmotions[selectedMood]?.map((emotion: string) => (
+                  {moodEmotions[selectedMood]?.map((emotion) => (
                     <TouchableOpacity
                       key={emotion}
                       onPress={() => toggleEmotion(emotion)}

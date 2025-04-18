@@ -6,9 +6,9 @@ import { StatusBar } from "expo-status-bar";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { format, subMonths, addMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay, subDays, addDays } from "date-fns";
 import { useWindowDimensions } from "react-native";
-import { useTheme } from "@/app/(root)/properties/themecontext"; // Import the theme hook
-import AsyncStorage from "@react-native-async-storage/async-storage"; // Add AsyncStorage import
-import CalendarMoodModal from "./calendar-mood-modal"; // Import the modal component
+import { useTheme } from "@/app/(root)/properties/themecontext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import CalendarMoodModal from "./calendar-mood-modal";
 import { getLocalMoodEntries, getLocalMoodEntryByDate, addLocalMoodEntry } from "@/app/services/localMoodStorage";
 import { getUserFromLocalStorage, saveUserToLocalStorage, updateUserXP, fetchUserXP } from "@/app/services/userService";
 import { useFocusEffect } from '@react-navigation/native';
@@ -21,7 +21,7 @@ import MoodMeh from "@/assets/icons/MoodMeh.png";
 import MoodBad from "@/assets/icons/MoodBad.png";
 import MoodAwful from "@/assets/icons/MoodAwful.png";
 
-const moodIcons: Record<string, any> = {
+const moodIcons = {
   Rad: MoodRad,
   Good: MoodGood,
   Meh: MoodMeh,
@@ -35,7 +35,7 @@ const moodIcons: Record<string, any> = {
 };
 
 // Map mood types to theme color properties
-const moodToThemeMap: Record<string, string> = {
+const moodToThemeMap = {
   "rad": "buttonBg",
   "good": "accent1",
   "meh": "accent2",
@@ -66,52 +66,20 @@ const THEME_STORAGE_KEY = "app_selected_theme";
 // Manila time zone offset in milliseconds (UTC+8)
 const MANILA_TIMEZONE_OFFSET = 8 * 60 * 60 * 1000;
 
-// Define types for mood entries
-interface MoodEntry {
-  id?: string;
-  user_id: string;
-  mood: string;
-  emotions: string[];
-  journal?: string;
-  logged_date: string;
-  created_at?: string;
-  timestamp?: number;
-  formattedDate?: string;
-  streak?: number;
-}
-
-interface MoodMap {
-  [key: string]: MoodEntry;
-}
-
-export interface ThemeColors {
-  [key: string]: string;
-  buttonBg: string;
-  accent1: string;
-  accent2: string;
-  accent3: string;
-  accent4: string;
-  text: string;
-  textDark: string;
-  bgLight: string;
-  dimmedText: string;
-  // ...add any other keys you use
-}
-
 export default function CalendarScreen() {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   const { width, height } = useWindowDimensions();
   const [view, setView] = useState("Calendar");
-  const [selectedReward, setSelectedReward] = useState<string | null>(null);
+  const [selectedReward, setSelectedReward] = useState(null);
   const [todayAffirmation, setTodayAffirmation] = useState("");
-  const [calendarEntries, setCalendarEntries] = useState<MoodEntry[]>([]);
-  const [moodMap, setMoodMap] = useState<MoodMap>({});
+  const [calendarEntries, setCalendarEntries] = useState([]);
+  const [moodMap, setMoodMap] = useState({});
   const [userXP, setUserXP] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [userId, setUserId] = useState(null);
   
   // State for viewing mood entry details
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState(null);
   const [moodModalVisible, setMoodModalVisible] = useState(false);
   
   // Use the theme context with multiple themes
@@ -210,17 +178,17 @@ export default function CalendarScreen() {
           setLoading(true);
           // Fetch entries from API
           const entries = await getLocalMoodEntries();
-          const normalizedEntries = entries.map((entry: any) => ({
+          const normalizedEntries = entries.map((entry) => ({
             ...entry,
             emotions: Array.isArray(entry.emotions)
               ? entry.emotions
               : typeof entry.emotions === "string"
-                ? entry.emotions.split(",").map((e: string) => e.trim()).filter(Boolean)
+                ? entry.emotions.split(",").map((e) => e.trim()).filter(Boolean)
                 : [],
           }));
           // Create a mood map for easy lookup by date
-          const newMoodMap: MoodMap = {};
-          normalizedEntries.forEach((entry: MoodEntry) => {
+          const newMoodMap = {};
+          normalizedEntries.forEach((entry) => {
             if (entry.logged_date) {
               // Use the date part only as key (YYYY-MM-DD)
               const dateKey = new Date(entry.logged_date).toISOString().split('T')[0];
@@ -250,19 +218,19 @@ export default function CalendarScreen() {
   };
 
   // Function to check if a day has a mood entry
-  const getDayMood = (day: Date) => {
+  const getDayMood = (day) => {
     const dateKey = day.toISOString().split('T')[0];
     return moodMap[dateKey]?.mood || null;
   };
 
   // Handle day selection (view only)
-  const handleDaySelect = (day: Date) => {
+  const handleDaySelect = (day) => {
     setSelectedDate(day);
     setMoodModalVisible(true);
   };
 
   // Handle reward selection
-  const handleRewardSelect = async (palette: any) => {
+  const handleRewardSelect = async (palette) => {
     if (palette.unlocked) {
       setSelectedReward(palette.title);
       setThemeName(palette.themeName);
@@ -443,7 +411,7 @@ export default function CalendarScreen() {
                   style={{ padding: 18, flexDirection: 'row', alignItems: 'center', borderRadius: 20 }}
                 >
                   <View style={{ width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', backgroundColor: palette.color, shadowColor: palette.unlocked ? palette.color : '#000', shadowOpacity: palette.unlocked ? 0.18 : 0.06, shadowRadius: palette.unlocked ? 8 : 2, elevation: palette.unlocked ? 4 : 1 }}>
-                    <Ionicons name={palette.icon as any} size={28} color="#fff" />
+                    <Ionicons name={palette.icon} size={28} color="#fff" />
                   </View>
                   <View style={{ marginLeft: 16, flex: 1 }}>
                     <Text style={{ color: theme.textDark, fontWeight: 'bold', fontSize: 17 }}>{palette.title}</Text>
