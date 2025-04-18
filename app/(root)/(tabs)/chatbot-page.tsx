@@ -6,7 +6,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { format, subMonths, addMonths } from "date-fns";
 import images from "@/constants/images";
 import { useWindowDimensions } from "react-native";
-import ChatbotRatingModal from "./chatbot-rating-modal"; // Import the rating modal component
+import ChatbotRatingModal from "./chatbot-rating-modal";
 import { 
   startChatbotSession, 
   endChatbotSession, 
@@ -69,7 +69,7 @@ function getChatbotXpDateKey(user: { user_id: number; nickname?: string } | null
   return `lastChatbotXpClaimDate_${user.user_id}`;
 }
 
-export default function ChatbotPageScreen() {
+function ChatbotPage() {
   const [messages, setMessages] = useState<Message[]>([
     { text: "Hey there! I'm Moodi, your AI friend! Just checking in—how's your day?", sender: "bot", role: "assistant", timestamp: new Date().toISOString() }
   ]);
@@ -492,3 +492,5 @@ export default function ChatbotPageScreen() {
     </SafeAreaView>
   );
 }
+
+export default ChatbotPage;
