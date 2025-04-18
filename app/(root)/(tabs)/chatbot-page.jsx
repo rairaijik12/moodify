@@ -10,13 +10,11 @@ import ChatbotRatingModal from "./chatbot-rating-modal";
 import { 
   startChatbotSession, 
   endChatbotSession, 
-  addChatbotRating,
-  ChatbotSession 
+  addChatbotRating
 } from "@/app/services/chatbotService";
 import { getUserFromLocalStorage, updateUserXP, fetchUserXP, awardUserXP, ensureXpRowExists } from "@/app/services/userService";
 import { getLocalChatHistory, saveLocalChatHistory, clearLocalChatHistory } from "@/app/services/localChatbotStorage";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import supabase from '@/supabaseConfig';
 import ConfettiCannon from 'react-native-confetti-cannon';
@@ -24,66 +22,33 @@ import ChatbotStartScreen from "./chatbot-start";
 
 const { height, width} = Dimensions.get("window");
 
-// Define the structure of the API response
-type Message = {
-  role?: 'system' | 'user' | 'assistant';
-  text: string;
-  sender: 'user' | 'bot';
-  timestamp: string;
-};
-
-interface APIResponse {
-  choices?: { message: { content: string } }[];
-  error?: string;
-}
-
-type ChatbotStackParamList = {
-  ChatbotPage: undefined;
-  ChatbotHistoryPage: undefined;
-};
-
-// Local session/message types
-interface LocalChatbotMessage {
-  text: string;
-  sender: 'user' | 'bot';
-  timestamp: string;
-  role?: 'system' | 'user' | 'assistant';
-}
-
-interface LocalChatbotSession {
-  sessionId: string;
-  startTime: string;
-  endTime?: string;
-  messages: LocalChatbotMessage[];
-}
-
-async function saveLocalChatSession(session: LocalChatbotSession) {
+async function saveLocalChatSession(session) {
   const sessions = await AsyncStorage.getItem('chatbot_sessions');
   const sessionsArr = sessions ? JSON.parse(sessions) : [];
   sessionsArr.push(session);
   await AsyncStorage.setItem('chatbot_sessions', JSON.stringify(sessionsArr));
 }
 
-function getChatbotXpDateKey(user: { user_id: number; nickname?: string } | null) {
+function getChatbotXpDateKey(user) {
   if (!user || !user.user_id) return null;
   return `lastChatbotXpClaimDate_${user.user_id}`;
 }
 
 function ChatbotPage() {
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState([
     { text: "Hey there! I'm Moodi, your AI friend! Just checking in—how's your day?", sender: "bot", role: "assistant", timestamp: new Date().toISOString() }
   ]);
   const [input, setInput] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
   const { width, height } = useWindowDimensions();
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef(null);
   const [ratingModalVisible, setRatingModalVisible] = useState(false);
-  const [currentSession, setCurrentSession] = useState<ChatbotSession | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [currentSession, setCurrentSession] = useState(null);
+  const [userId, setUserId] = useState(null);
   const [initializing, setInitializing] = useState(true);
-  const navigation = useNavigation<NativeStackNavigationProp<ChatbotStackParamList>>();
-  const [sessionStartTime, setSessionStartTime] = useState<string>(new Date().toISOString());
+  const navigation = useNavigation();
+  const [sessionStartTime, setSessionStartTime] = useState(new Date().toISOString());
   const [showClaimXP, setShowClaimXP] = useState(false);
   const [pendingXP, setPendingXP] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -95,7 +60,7 @@ function ChatbotPage() {
       let localMessages = await getLocalChatHistory();
       if (localMessages && localMessages.length > 0) {
         // Ensure all messages have a timestamp and role
-        const normalizedMessages: Message[] = localMessages.map((msg: any) => ({
+        const normalizedMessages = localMessages.map((msg) => ({
           ...msg,
           timestamp: msg.timestamp || new Date().toISOString(),
           role: msg.role || (msg.sender === 'user' ? 'user' : 'assistant'),
@@ -137,7 +102,7 @@ function ChatbotPage() {
   const sendMessage = async () => {
     if (input.trim() === "") return;
 
-    const userMessage: Message = { 
+    const userMessage = { 
       text: input, 
       sender: "user", 
       role: "user", 
@@ -155,7 +120,7 @@ function ChatbotPage() {
 
     // Simulate bot response
     setTimeout(async () => {
-      const botResponse: Message = {
+      const botResponse = {
         text: getDefaultResponse(input),
         sender: "bot",
         role: "assistant",
@@ -173,7 +138,7 @@ function ChatbotPage() {
   };
 
   // Function to get a default response based on user input
-  const getDefaultResponse = (userInput: string) => {
+  const getDefaultResponse = (userInput) => {
     const lowerInput = userInput.toLowerCase();
     
     if (lowerInput.includes("hello") || lowerInput.includes("hi") || lowerInput.includes("hey")) {
@@ -200,7 +165,7 @@ function ChatbotPage() {
   // Function to handle END button press
   const handleEndChat = async () => {
     // Save the current session to local storage
-    const session: LocalChatbotSession = {
+    const session = {
       sessionId: sessionStartTime,
       startTime: sessionStartTime,
       endTime: new Date().toISOString(),
@@ -212,13 +177,13 @@ function ChatbotPage() {
   };
 
   // Function to handle rating submission
-  const handleRatingSubmit = async (rating: number, feedback: string) => {
+  const handleRatingSubmit = async (rating, feedback) => {
     try {
       if (currentSession?.chat_session_id) {
         // End the session
-        await endChatbotSession(currentSession.chat_session_id!);
+        await endChatbotSession(currentSession.chat_session_id);
         // Save the rating
-        await addChatbotRating(currentSession.chat_session_id!, rating, feedback);
+        await addChatbotRating(currentSession.chat_session_id, rating, feedback);
         console.log("Chat session ended and rated:", rating, feedback);
       }
       // Instead of awarding XP here, show the Claim XP modal only if not already claimed today (per user)
@@ -247,7 +212,7 @@ function ChatbotPage() {
         { text: "Hey there! I'm Moodi, your AI friend! Just checking in—how's your day?", sender: "bot", role: "assistant", timestamp: new Date().toISOString() }
       ]);
       await saveLocalChatHistory([
-        { text: "Hey there! I'm Moodi, your AI friend! Just checking in—how's your day?", sender: "bot", role: "assistant", timestamp: new Date().toISOString() } as Message
+        { text: "Hey there! I'm Moodi, your AI friend! Just checking in—how's your day?", sender: "bot", role: "assistant", timestamp: new Date().toISOString() }
       ]);
       // Start a new session
       if (userId) {
