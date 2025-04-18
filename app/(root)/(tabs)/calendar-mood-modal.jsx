@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, Modal, Image, useWindowDimensions, ScrollView, TextInput } from "react-native";
+import { View, Text, TouchableOpacity, Modal, Image, useWindowDimensions, ScrollView, TextInput, Alert } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { format } from "date-fns";
+import { format, isAfter, startOfTomorrow } from "date-fns";
 import { useTheme } from "@/app/(root)/properties/themecontext";
 
 // Import mood icons
@@ -75,9 +75,21 @@ const CalendarMoodModal = ({
   const [journalEntry, setJournalEntry] = useState("");
   const [viewMode, setViewMode] = useState("view");
 
+  // Check if the selected date is valid (not in the future)
+  const isValidDate = date && !isAfter(date, startOfTomorrow());
+
   // Reset form when modal opens
   useEffect(() => {
     if (visible) {
+      if (!isValidDate) {
+        Alert.alert(
+          "Invalid Date",
+          "You can only add mood entries for past and present dates.",
+          [{ text: "OK", onPress: onClose }]
+        );
+        return;
+      }
+
       if (existingEntry) {
         setSelectedMood(existingEntry.mood || "");
         setSelectedEmotions(existingEntry.emotions || []);
@@ -90,9 +102,9 @@ const CalendarMoodModal = ({
         setViewMode("edit");
       }
     }
-  }, [visible, existingEntry]);
+  }, [visible, existingEntry, isValidDate]);
 
-  if (!visible) return null;
+  if (!visible || !isValidDate) return null;
   
   // Get the appropriate color from theme based on mood
   const getMoodThemeColor = (mood) => {
@@ -110,19 +122,43 @@ const CalendarMoodModal = ({
 
   const moodColor = getMoodThemeColor(selectedMood || (existingEntry?.mood || ""));
   
-  // Toggle an emotion in the selected emotions array
+  // Toggle emotion selection with limit
   const toggleEmotion = (emotion) => {
-    if (selectedEmotions.includes(emotion)) {
-      setSelectedEmotions(selectedEmotions.filter(e => e !== emotion));
-    } else {
-      setSelectedEmotions([...selectedEmotions, emotion]);
-    }
+    setSelectedEmotions(prev => {
+      if (prev.includes(emotion)) {
+        return prev.filter(e => e !== emotion);
+      } else {
+        // Only add if less than 3 emotions are selected
+        if (prev.length < 3) {
+          return [...prev, emotion];
+        }
+        return prev;
+      }
+    });
   };
+
+  // Check if form is valid
+  const isFormValid = selectedMood && selectedEmotions.length >= 1 && selectedEmotions.length <= 3 && isValidDate;
   
   // Handle form submission
   const handleSubmit = () => {
+    if (!isValidDate) {
+      Alert.alert("Error", "You can only add mood entries for past and present dates");
+      return;
+    }
+
     if (!selectedMood) {
-      alert("Please select a mood");
+      Alert.alert("Error", "Please select a mood");
+      return;
+    }
+
+    if (selectedEmotions.length === 0) {
+      Alert.alert("Error", "Please select at least one emotion");
+      return;
+    }
+
+    if (selectedEmotions.length > 3) {
+      Alert.alert("Error", "Please select no more than 3 emotions");
       return;
     }
     
@@ -483,7 +519,7 @@ const CalendarMoodModal = ({
               </View>
             </View>
             
-            {/* Emotions Selection - only show if mood is selected */}
+            {/* Emotions Selection - update the helper text */}
             {selectedMood && (
               <View style={{ marginBottom: 20 }}>
                 <Text style={{
@@ -492,14 +528,24 @@ const CalendarMoodModal = ({
                   color: "#000746",
                   marginBottom: 12
                 }}>
-                  Select emotions (optional)
+                  Select emotions (1-3)
                 </Text>
                 
+                <Text style={{
+                  fontFamily: "LeagueSpartan",
+                  fontSize: 14,
+                  color: "#666",
+                  marginBottom: 8
+                }}>
+                  Selected: {selectedEmotions.length}/3 {selectedEmotions.length === 3 && "(Max)"}
+                </Text>
+
                 <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
                   {moodEmotions[selectedMood]?.map((emotion) => (
                     <TouchableOpacity
                       key={emotion}
                       onPress={() => toggleEmotion(emotion)}
+                      disabled={selectedEmotions.length >= 3 && !selectedEmotions.includes(emotion)}
                       style={{
                         backgroundColor: selectedEmotions.includes(emotion) 
                           ? getMoodThemeColor(selectedMood) 
@@ -507,7 +553,8 @@ const CalendarMoodModal = ({
                         paddingHorizontal: 12,
                         paddingVertical: 6,
                         borderRadius: 16,
-                        margin: 4
+                        margin: 4,
+                        opacity: (selectedEmotions.length >= 3 && !selectedEmotions.includes(emotion)) ? 0.5 : 1
                       }}
                     >
                       <Text style={{
@@ -552,16 +599,16 @@ const CalendarMoodModal = ({
               />
             </View>
             
-            {/* Submit Button */}
+            {/* Submit Button - update the disabled state */}
             <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 8 }}>
               <TouchableOpacity
                 onPress={handleSubmit}
-                disabled={!selectedMood}
+                disabled={!isFormValid}
                 style={{
                   paddingHorizontal: 40,
                   paddingVertical: 14,
                   borderRadius: 100,
-                  backgroundColor: selectedMood ? getMoodThemeColor(selectedMood) : "#CCCCCC"
+                  backgroundColor: isFormValid ? getMoodThemeColor(selectedMood) : "#CCCCCC"
                 }}
               >
                 <Text style={{

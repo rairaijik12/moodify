@@ -14,14 +14,22 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-interface SettingsModalProps {
-  visible: boolean;
-  onClose: () => void;
-  nickname: string;
-  theme?: any; // Add theme prop
-}
-
-export default function SettingsModal({ visible, onClose, nickname, theme }: SettingsModalProps) {
+/**
+ * Settings Modal Component
+ * Displays app settings and user information
+ * 
+ * @param {Object} props
+ * @param {boolean} props.visible - Whether the modal is visible
+ * @param {Function} props.onClose - Function to call when closing the modal
+ * @param {string} props.nickname - User's nickname to display
+ * @param {Object} [props.theme] - Theme object for customizing colors
+ * @param {string} [props.theme.background] - Background color
+ * @param {string} [props.theme.text] - Text color
+ * @param {string} [props.theme.buttonBg] - Button background color
+ * @param {string} [props.theme.calendarBg] - Calendar background color
+ * @param {string} [props.theme.dimmedText] - Dimmed text color
+ */
+export default function SettingsModal({ visible, onClose, nickname, theme }) {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   

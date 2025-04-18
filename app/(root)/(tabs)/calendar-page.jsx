@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect, useCallback } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -227,6 +227,59 @@ export default function CalendarScreen() {
   const handleDaySelect = (day) => {
     setSelectedDate(day);
     setMoodModalVisible(true);
+  };
+
+  // Handle mood entry submission
+  const handleMoodSubmit = async (mood, emotions, journal) => {
+    try {
+      const user = await getUserFromLocalStorage();
+      if (!user) {
+        console.error("No user found - cannot save mood entry");
+        return;
+      }
+
+      // Save to local storage
+      const result = await addLocalMoodEntry(
+        mood,
+        emotions,
+        journal,
+        selectedDate,
+        user.user_id
+      );
+
+      if (result) {
+        console.log("Entry saved successfully:", result);
+        
+        // Update mood map
+        setMoodMap(prev => {
+          const dateKey = selectedDate.toISOString().split('T')[0];
+          return {
+            ...prev,
+            [dateKey]: result
+          };
+        });
+
+        // Update calendar entries
+        setCalendarEntries(prev => {
+          const existingIndex = prev.findIndex(e => 
+            e.formattedDate === result.formattedDate
+          );
+          
+          if (existingIndex >= 0) {
+            const newEntries = [...prev];
+            newEntries[existingIndex] = result;
+            return newEntries;
+          } else {
+            return [result, ...prev].sort((a, b) => 
+              new Date(b.logged_date).getTime() - new Date(a.logged_date).getTime()
+            );
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Error saving mood entry:", error);
+      Alert.alert("Error", "Failed to save mood entry. Please try again.");
+    }
   };
 
   // Handle reward selection
@@ -459,7 +512,7 @@ export default function CalendarScreen() {
           visible={moodModalVisible}
           date={selectedDate}
           onClose={() => setMoodModalVisible(false)}
-          onSubmit={() => {}} // Disabled, view only
+          onSubmit={handleMoodSubmit}
           existingEntry={selectedDate ? moodMap[selectedDate.toISOString().split('T')[0]] : null}
         />
       )}

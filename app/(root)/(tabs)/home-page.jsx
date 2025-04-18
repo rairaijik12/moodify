@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Image, useWindowDimensions, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -13,6 +13,7 @@ import { useTheme } from "@/app/(root)/properties/themecontext"; // Import the t
 import { moodColors } from "@/app/services/type";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ChatbotStartScreen from "./chatbot-start";
+import { useFocusEffect } from '@react-navigation/native';
 
 // Import local mood storage functions instead of Supabase
 import { 
@@ -114,23 +115,24 @@ export default function HomeScreen() {
     loadUserXP();
   }, []);
 
-  // Load entries from API
-  useEffect(() => {
-    // Load mood entries from local storage
-    const loadMoodEntries = async () => {
-      try {
-        console.log("Loading mood entries from local storage...");
-        const entriesFromStorage = await getLocalMoodEntries();
-        console.log("Initial entries:", entriesFromStorage);
-        setEntries(entriesFromStorage || []);
-      } catch (error) {
-        console.error("Error loading mood entries:", error);
-        setEntries([]);
-      }
-    };
+  // Replace the useEffect for loading entries with useFocusEffect
+  useFocusEffect(
+    useCallback(() => {
+      const loadMoodEntries = async () => {
+        try {
+          console.log("Loading mood entries from local storage...");
+          const entriesFromStorage = await getLocalMoodEntries();
+          console.log("Initial entries:", entriesFromStorage);
+          setEntries(entriesFromStorage || []);
+        } catch (error) {
+          console.error("Error loading mood entries:", error);
+          setEntries([]);
+        }
+      };
 
-    loadMoodEntries();
-  }, []);
+      loadMoodEntries();
+    }, [])
+  );
 
   // Filter entries based on selected view mode (weekly or monthly)
   useEffect(() => {

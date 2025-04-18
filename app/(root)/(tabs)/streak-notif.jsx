@@ -8,16 +8,23 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 import { getUserFromLocalStorage, updateUserXP, ensureXpRowExists, STORAGE_KEYS } from "@/app/services/userService";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-interface XpStreakPopupModalProps {
-  visible: boolean;
-  onClose: () => void;
-  totalXp: number;
-  streak: number;
-  xpAmount?: number;
-  xpSource?: 'mood_entry' | 'chatbot_rating' | null;
-  isPastDay?: boolean;
-}
+/**
+ * @typedef {'mood_entry' | 'chatbot_rating' | null} XpSource
+ */
 
+/**
+ * XP and Streak Popup Component
+ * Displays a modal with XP rewards and streak information
+ * 
+ * @param {Object} props
+ * @param {boolean} props.visible - Whether the modal is visible
+ * @param {Function} props.onClose - Function to call when closing the modal
+ * @param {number} props.totalXp - Total XP accumulated by the user
+ * @param {number} props.streak - Current streak count
+ * @param {number} [props.xpAmount] - Optional custom XP amount to display
+ * @param {XpSource} [props.xpSource] - Source of the XP reward
+ * @param {boolean} [props.isPastDay=false] - Whether this is for a past day entry
+ */
 const XpStreakPopup = ({ 
   visible, 
   onClose, 
@@ -26,7 +33,7 @@ const XpStreakPopup = ({
   xpAmount, 
   xpSource, 
   isPastDay = false 
-}: XpStreakPopupModalProps) => {
+}) => {
   const { width, height } = useWindowDimensions();
   const [confettiActive, setConfettiActive] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);

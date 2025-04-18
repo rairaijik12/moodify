@@ -1,18 +1,19 @@
 import { View, Text, Image, TouchableOpacity, Dimensions, SafeAreaView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useWindowDimensions } from "react-native";
 import images from "@/constants/images";
 
 const { height } = Dimensions.get("window");
 
-type ChatbotStackParamList = {
-  ChatbotPage: undefined;
-};
-
+/**
+ * StartConversationModal Component
+ * Displays a modal to start a conversation with the chatbot
+ * 
+ * @returns {JSX.Element} The rendered component
+ */
 export default function StartConversationModal() {
   const { width, height } = useWindowDimensions();
-  const navigation = useNavigation<NativeStackNavigationProp<ChatbotStackParamList>>();
+  const navigation = useNavigation();
 
   return (
     <SafeAreaView className="flex-1 justify-center items-center bg-bg-dark">

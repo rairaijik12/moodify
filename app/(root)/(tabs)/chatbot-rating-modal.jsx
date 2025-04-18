@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-interface ChatbotRatingModalProps {
-  onSubmit: (rating: number, feedback: string) => void;
-  visible: boolean;
-}
-
-const ChatbotRatingModal = ({ onSubmit, visible }: ChatbotRatingModalProps) => {
+/**
+ * ChatbotRatingModal Component
+ * @param {Object} props
+ * @param {Function} props.onSubmit - Callback function that receives rating number and feedback string
+ * @param {boolean} props.visible - Whether the modal is visible
+ */
+const ChatbotRatingModal = ({ onSubmit, visible }) => {
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState('');
   const [error, setError] = useState('');

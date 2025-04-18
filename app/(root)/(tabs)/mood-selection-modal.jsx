@@ -6,20 +6,21 @@ import icons from '@/constants/icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-interface MoodSelectionModalProps {
-  visible: boolean;
-  onClose: () => void;
-  onSelectMood: (mood: string) => void;
-  selectedDate: Date;
-  setSelectedDate: (date: Date) => void;
-  isDatePickerVisible: boolean;
-  setDatePickerVisible: (visible: boolean) => void;
-  isTimePickerVisible: boolean;
-  setTimePickerVisible: (visible: boolean) => void;
-  theme: any;
-}
-
-const MoodSelectionModal: React.FC<MoodSelectionModalProps> = ({
+/**
+ * MoodSelectionModal Component
+ * @param {Object} props
+ * @param {boolean} props.visible - Whether the modal is visible
+ * @param {Function} props.onClose - Function to call when closing the modal
+ * @param {Function} props.onSelectMood - Function to call when a mood is selected
+ * @param {Date} props.selectedDate - Currently selected date
+ * @param {Function} props.setSelectedDate - Function to update the selected date
+ * @param {boolean} props.isDatePickerVisible - Whether the date picker is visible
+ * @param {Function} props.setDatePickerVisible - Function to toggle date picker visibility
+ * @param {boolean} props.isTimePickerVisible - Whether the time picker is visible
+ * @param {Function} props.setTimePickerVisible - Function to toggle time picker visibility
+ * @param {Object} props.theme - Theme object for styling
+ */
+const MoodSelectionModal = ({
   visible,
   onClose,
   onSelectMood,
@@ -36,7 +37,7 @@ const MoodSelectionModal: React.FC<MoodSelectionModalProps> = ({
   const showTimePicker = () => setTimePickerVisible(true);
 
   // Functions to handle date/time selection
-  const handleDateConfirm = (date: Date) => {
+  const handleDateConfirm = (date) => {
     const newDate = new Date(selectedDate);
     newDate.setFullYear(date.getFullYear());
     newDate.setMonth(date.getMonth());
@@ -45,7 +46,7 @@ const MoodSelectionModal: React.FC<MoodSelectionModalProps> = ({
     setDatePickerVisible(false);
   };
 
-  const handleTimeConfirm = (date: Date) => {
+  const handleTimeConfirm = (date) => {
     const newDate = new Date(selectedDate);
     newDate.setHours(date.getHours());
     newDate.setMinutes(date.getMinutes());

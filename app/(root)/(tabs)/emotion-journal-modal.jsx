@@ -3,32 +3,34 @@ import { View, Text, TouchableOpacity, Modal, TextInput, ScrollView, useWindowDi
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-interface Theme {
-  background: string;
-  text: string;
-  buttonBg: string;
-  calendarBg: string;
-  dimmedText: string;
-  accent1: string;
-  accent2: string;
-  accent3: string;
-  accent4: string;
-  // Add other theme properties as needed
-}
+/**
+ * @typedef {Object} Theme
+ * @property {string} background - Background color
+ * @property {string} text - Text color
+ * @property {string} buttonBg - Button background color
+ * @property {string} calendarBg - Calendar background color
+ * @property {string} dimmedText - Dimmed text color
+ * @property {string} accent1 - First accent color
+ * @property {string} accent2 - Second accent color
+ * @property {string} accent3 - Third accent color
+ * @property {string} accent4 - Fourth accent color
+ */
 
-interface EmotionJournalModalProps {
-  visible: boolean;
-  onBack: () => void;
-  selectedEmotions: string[];
-  setSelectedEmotions: React.Dispatch<React.SetStateAction<string[]>>;
-  journalEntry: string;
-  setJournalEntry: React.Dispatch<React.SetStateAction<string>>;
-  onContinue: () => void;
-  theme: Theme;
-}
+/**
+ * Emotion Journal Modal Component
+ * @param {Object} props
+ * @param {boolean} props.visible - Whether the modal is visible
+ * @param {Function} props.onBack - Function to call when going back
+ * @param {string[]} props.selectedEmotions - Array of selected emotion names
+ * @param {Function} props.setSelectedEmotions - Function to update selected emotions
+ * @param {string} props.journalEntry - Current journal entry text
+ * @param {Function} props.setJournalEntry - Function to update journal entry
+ * @param {Function} props.onContinue - Function to call when continuing
+ * @param {Theme} props.theme - Theme object for styling
+ */
 
 // Map emotion names to theme color properties
-const emotionToThemeMap: Record<string, keyof Theme> = {
+const emotionToThemeMap = {
   "energetic": "buttonBg",
   "excited": "buttonBg",
   "confident": "buttonBg",
@@ -47,7 +49,7 @@ const emotionToThemeMap: Record<string, keyof Theme> = {
   "angry": "accent4",
 };
 
-const EmotionJournalModal: React.FC<EmotionJournalModalProps> = ({
+const EmotionJournalModal = ({
   visible,
   onBack,
   selectedEmotions,
@@ -62,7 +64,7 @@ const EmotionJournalModal: React.FC<EmotionJournalModalProps> = ({
   const iconSize = width < 350 ? 22 : 28;
 
   // Toggle emotion selection
-  const toggleEmotion = (emotion: string) => {
+  const toggleEmotion = (emotion) => {
     setSelectedEmotions(prev => {
       if (prev.includes(emotion)) {
         return prev.filter(e => e !== emotion);
@@ -93,7 +95,7 @@ const EmotionJournalModal: React.FC<EmotionJournalModalProps> = ({
   ];
 
   // Get emotion color from theme
-  const getEmotionThemeColor = (emotion: string): string => {
+  const getEmotionThemeColor = (emotion) => {
     const themeProperty = emotionToThemeMap[emotion];
     
     if (themeProperty && theme[themeProperty]) {

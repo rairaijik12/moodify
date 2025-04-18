@@ -2,13 +2,16 @@ import React from "react";
 import { View, Text, TouchableOpacity, Modal, Image, useWindowDimensions } from "react-native";
 import images from "@/constants/images";
 
-interface WelcomeModalProps {
-  visible: boolean;
-  onClose: () => void;
-  nickname: string;
-}
-
-const WelcomeModal: React.FC<WelcomeModalProps> = ({
+/**
+ * WelcomeModal Component
+ * Displays a welcome message to new users
+ * 
+ * @param {Object} props
+ * @param {boolean} props.visible - Whether the modal is visible
+ * @param {Function} props.onClose - Function to call when closing the modal
+ * @param {string} props.nickname - User's nickname to display in the welcome message
+ */
+const WelcomeModal = ({
   visible,
   onClose,
   nickname,

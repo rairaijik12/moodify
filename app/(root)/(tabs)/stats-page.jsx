@@ -27,12 +27,13 @@ const { width, height } = Dimensions.get("window");
 const screenWidth = width - 40; // Account for padding
 const chartWidth = screenWidth - 16;
 
-type MoodEntry = {
-  timestamp?: number;
-  mood: string;
-  emotions: string | string[];
-  journal?: string;
-};
+/**
+ * @typedef {Object} MoodEntry
+ * @property {number} [timestamp] - Optional timestamp of the mood entry
+ * @property {string} mood - The mood value
+ * @property {string|string[]} emotions - Array of emotions or single emotion string
+ * @property {string} [journal] - Optional journal entry
+ */
 
 // Array of daily affirmations
 const affirmations = [
@@ -47,7 +48,7 @@ const affirmations = [
 ];
 
 // Map mood types to theme color properties
-const moodToThemeMap: Record<string, string> = {
+const moodToThemeMap = {
   "rad": "buttonBg",
   "good": "accent1",
   "meh": "accent2",
@@ -56,7 +57,7 @@ const moodToThemeMap: Record<string, string> = {
 };
 
 // Map mood values to numerical scores for averages
-const moodScores: Record<string, number> = {
+const moodScores = {
   "rad": 5,
   "good": 4,
   "meh": 3,
@@ -65,7 +66,7 @@ const moodScores: Record<string, number> = {
 };
 
 // Define mood names with proper capitalization
-const moodNames: Record<string, string> = {
+const moodNames = {
   "rad": "Rad",
   "good": "Good",
   "meh": "Meh",
@@ -73,21 +74,18 @@ const moodNames: Record<string, string> = {
   "awful": "Awful"
 };
 
+/**
+ * StatsScreen Component
+ * Displays statistics and visualizations for mood entries
+ */
 export default function StatsScreen() {
   const { theme } = useTheme();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [viewMode, setViewMode] = useState("weekly"); // "weekly" or "monthly"
   const [todayAffirmation, setTodayAffirmation] = useState("");
-  const [entries, setEntries] = useState<MoodEntry[]>([]);
-  const [filteredEntries, setFilteredEntries] = useState<MoodEntry[]>([]);
-  const [stats, setStats] = useState<{
-    moodCounts: { [key: string]: number };
-    avgScore: number;
-    streak: number;
-    topEmotions: { emotion: string; count: number }[];
-    journalPercentage: number;
-    weeklyTrend: { day?: string; week?: string; score: number }[];
-  }>({
+  const [entries, setEntries] = useState([]);
+  const [filteredEntries, setFilteredEntries] = useState([]);
+  const [stats, setStats] = useState({
     moodCounts: {},
     avgScore: 0,
     streak: 0,
@@ -162,11 +160,11 @@ export default function StatsScreen() {
     }
 
     // Calculate mood counts - ensuring lowercase mood values
-    const moodCounts = filteredEntries.reduce((acc: Record<string, number>, entry) => {
+    const moodCounts = filteredEntries.reduce((acc, entry) => {
       const normalizedMood = entry.mood.toLowerCase();
       acc[normalizedMood] = (acc[normalizedMood] || 0) + 1;
       return acc;
-    }, {} as Record<string, number>);
+    }, {});
 
     // Calculate average mood score
     const totalScore = filteredEntries.reduce((sum, entry) => {
@@ -180,8 +178,8 @@ export default function StatsScreen() {
     const journalPercentage = (entriesWithJournal.length / filteredEntries.length) * 100;
 
     // Count emotions and get top ones
-    const emotionCounts = filteredEntries.reduce((acc: Record<string, number>, entry) => {
-      let emotionsArr: string[] = [];
+    const emotionCounts = filteredEntries.reduce((acc, entry) => {
+      let emotionsArr = [];
       if (typeof entry.emotions === 'string') {
         try {
           emotionsArr = JSON.parse(entry.emotions);
@@ -192,12 +190,12 @@ export default function StatsScreen() {
         emotionsArr = entry.emotions;
       }
       if (emotionsArr.length > 0) {
-        emotionsArr.forEach((emotion: string) => {
+        emotionsArr.forEach(emotion => {
           acc[emotion] = (acc[emotion] || 0) + 1;
         });
       }
       return acc;
-    }, {} as Record<string, number>);
+    }, {});
     
     const topEmotions = Object.entries(emotionCounts)
       .sort((a, b) => Number(b[1]) - Number(a[1]))
@@ -293,8 +291,12 @@ export default function StatsScreen() {
     setViewMode(viewMode === "weekly" ? "monthly" : "weekly");
   };
 
-  // Get color for mood from theme
-  const getMoodThemeColor = (mood: string) => {
+  /**
+   * Get color for mood from theme
+   * @param {string} mood - The mood value to get color for
+   * @returns {string} The color value from theme or fallback color
+   */
+  const getMoodThemeColor = (mood) => {
     const themeProperty = moodToThemeMap[mood.toLowerCase()];
     return theme[themeProperty] || "#999";
   };
@@ -772,7 +774,7 @@ export default function StatsScreen() {
                   {viewMode === "weekly" ? (
                     <BarChart
                       data={{
-                        labels: stats.weeklyTrend.map(d => d.day ?? "") as string[],
+                        labels: stats.weeklyTrend.map(d => d.day ?? ""),
                         datasets: [{
                           data: stats.weeklyTrend.map(d => d.score)
                         }]
@@ -810,7 +812,7 @@ export default function StatsScreen() {
                   ) : (
                     <LineChart
                       data={{
-                        labels: stats.weeklyTrend.map(d => d.week ?? "") as string[],
+                        labels: stats.weeklyTrend.map(d => d.week ?? ""),
                         datasets: [{
                           data: stats.weeklyTrend.map(d => d.score)
                         }]

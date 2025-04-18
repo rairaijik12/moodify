@@ -7,7 +7,7 @@ import images from "@/constants/images";
 import icons from "@/constants/icons";
 
 // Map mood types to theme color properties
-const moodToThemeMap: Record<string, string> = {
+const moodToThemeMap = {
   "rad": "buttonBg",
   "good": "accent1",
   "meh": "accent2",
@@ -15,21 +15,21 @@ const moodToThemeMap: Record<string, string> = {
   "awful": "accent4"
 };
 
-// Define props interface
-interface SummaryModalProps {
-  visible: boolean;
-  onClose: () => void;
-  selectedMood: string;
-  selectedEmotions: string[];
-  selectedDate: Date;
-  onSaveEntry: () => void;
-  onChatbot: () => void;
-  theme: Record<string, any>;
-  width: number;
-  height: number;
-  moodColors: Record<string, string>;
-}
-
+/**
+ * SummaryModal Component
+ * @param {Object} props
+ * @param {boolean} props.visible - Whether the modal is visible
+ * @param {Function} props.onClose - Function to call when closing the modal
+ * @param {string} props.selectedMood - Currently selected mood
+ * @param {string[]} props.selectedEmotions - Array of selected emotions
+ * @param {Date} props.selectedDate - Selected date and time
+ * @param {Function} props.onSaveEntry - Function to call when saving the entry
+ * @param {Function} props.onChatbot - Function to call when opening chatbot
+ * @param {Object} props.theme - Theme object for styling
+ * @param {number} props.width - Modal width
+ * @param {number} props.height - Modal height
+ * @param {Object} props.moodColors - Object mapping moods to colors
+ */
 const SummaryModal = ({
   visible,
   onClose,
@@ -42,12 +42,16 @@ const SummaryModal = ({
   width: modalWidth,
   height: modalHeight,
   moodColors
-}: SummaryModalProps) => {
+}) => {
   const modalPadding = modalWidth < 350 ? 12 : 24;
   const iconSize = modalWidth < 350 ? 22 : 28;
 
-  // Get mood color from theme
-  const getMoodThemeColor = (mood: string) => {
+  /**
+   * Get mood color from theme
+   * @param {string} mood - The mood to get color for
+   * @returns {string} The color value from theme
+   */
+  const getMoodThemeColor = (mood) => {
     if (!mood) return theme.calendarBg;
     
     // Convert "rad" to "Rad" if needed for mapping

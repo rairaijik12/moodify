@@ -8,32 +8,47 @@ import { useWindowDimensions } from "react-native";
 
 const { height, width } = Dimensions.get("window");
 
-// Local session/message types
-interface LocalChatbotMessage {
-  text: string;
-  sender: 'user' | 'bot';
-  timestamp?: string;
-}
+/**
+ * @typedef {Object} LocalChatbotMessage
+ * @property {string} text - The message text
+ * @property {'user' | 'bot'} sender - Who sent the message
+ * @property {string} [timestamp] - Optional timestamp of when the message was sent
+ */
 
-interface LocalChatbotSession {
-  sessionId: string;
-  startTime: string;
-  endTime?: string;
-  messages: LocalChatbotMessage[];
-}
+/**
+ * @typedef {Object} LocalChatbotSession
+ * @property {string} sessionId - Unique identifier for the session
+ * @property {string} startTime - When the session started
+ * @property {string} [endTime] - Optional time when the session ended
+ * @property {LocalChatbotMessage[]} messages - Array of messages in the session
+ */
 
-async function getLocalChatSessions(): Promise<LocalChatbotSession[]> {
+/**
+ * Get all chat sessions from local storage
+ * @returns {Promise<LocalChatbotSession[]>} Array of chat sessions
+ */
+async function getLocalChatSessions() {
   const sessions = await AsyncStorage.getItem('chatbot_sessions');
   return sessions ? JSON.parse(sessions) : [];
 }
 
-async function deleteLocalChatSession(sessionId: string) {
+/**
+ * Delete a chat session from local storage
+ * @param {string} sessionId - ID of the session to delete
+ */
+async function deleteLocalChatSession(sessionId) {
   const sessions = await getLocalChatSessions();
-  const filtered = sessions.filter((s: LocalChatbotSession) => s.sessionId !== sessionId);
+  const filtered = sessions.filter(s => s.sessionId !== sessionId);
   await AsyncStorage.setItem('chatbot_sessions', JSON.stringify(filtered));
 }
 
-function ChatSessionViewer({ session, onBack }: { session: LocalChatbotSession; onBack: () => void }) {
+/**
+ * Component to view a single chat session
+ * @param {Object} props
+ * @param {LocalChatbotSession} props.session - The session to display
+ * @param {Function} props.onBack - Function to call when going back
+ */
+function ChatSessionViewer({ session, onBack }) {
   return (
     <SafeAreaView className="flex-1 bg-[#121212]">
       <StatusBar style="light" />
@@ -90,11 +105,15 @@ function ChatSessionViewer({ session, onBack }: { session: LocalChatbotSession; 
   );
 }
 
+/**
+ * ChatbotHistoryPage Component
+ * Displays a list of past chat sessions and allows viewing/deleting them
+ */
 export default function ChatbotHistoryPage() {
-  const [sessions, setSessions] = useState<LocalChatbotSession[]>([]);
+  const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSession, setSelectedSession] = useState<LocalChatbotSession | null>(null);
-  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [selectedSession, setSelectedSession] = useState(null);
+  const [sortOrder, setSortOrder] = useState('newest');
   const { width } = useWindowDimensions();
 
   useEffect(() => {
@@ -114,7 +133,11 @@ export default function ChatbotHistoryPage() {
     return sortOrder === 'newest' ? bTime - aTime : aTime - bTime;
   });
 
-  const handleDeleteSession = (sessionId: string) => {
+  /**
+   * Handle deleting a chat session
+   * @param {string} sessionId - ID of the session to delete
+   */
+  const handleDeleteSession = (sessionId) => {
     Alert.alert(
       'Delete Session',
       'Are you sure you want to delete this chat session? This cannot be undone.',
